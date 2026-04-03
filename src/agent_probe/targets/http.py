@@ -65,6 +65,9 @@ class HttpTarget(BaseTarget):
         except Exception:
             pass
 
+    def __str__(self) -> str:
+        return self.url
+
     def is_available(self) -> bool:
         try:
             req = urllib.request.Request(self.url, method="GET")
