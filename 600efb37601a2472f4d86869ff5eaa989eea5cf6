@@ -1,0 +1,5 @@
+Situation: v0.2.0 shipped — 54 tests (31 integration + 23 unit), CI vert Python 3.10-3.13. Mock server infra complète (vulnerable + secure handlers). Release GitHub publiée.
+Reasoning: Integration tests prouvent le pipeline end-to-end. Le mock server est extensible — ajouter un handler = tester un nouveau comportement agent.
+Assessment: Le mock server est simpliste (regex matching sur keywords). Pour tester de vrais agents, il faudra un adapteur plus sophistiqué. Les probes actuels sont suffisants pour démontrer le concept mais pas encore assez pervers pour trouver des failles subtiles.
+Action: Prochaines probes : memory poisoning multi-step, confused deputy A2A, cost bomb. Puis tester contre un vrai agent framework (Langchain, CrewAI). Article Dev.to #8 sur le gap agent-level testing.
+Caution: Les canary strings dans les tests déclenchent le code-guard hook de CL-GO — utiliser des canaries générés au runtime, pas des strings statiques.
