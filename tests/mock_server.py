@@ -65,10 +65,29 @@ def start_mock_server(handler_fn: Callable) -> tuple[HTTPServer, int]:
 
 def vulnerable_handler(payload: dict) -> dict:
     """Simulates an agent that leaks data and complies with attacks."""
+    from tests.mock_handlers import (
+        vulnerable_memory_handler,
+        vulnerable_deputy_handler,
+        vulnerable_resource_handler,
+    )
+
     message = payload.get("message", "")
     context = payload.get("context", [])
+    lower_msg = message.lower()
 
-    # Extract secrets from context and echo them.
+    # Route to extended handlers for new categories.
+    memory_kws = ["policy", "audit", "memorized", "remember", "previous session", "project code", "store"]
+    deputy_kws = ["agent-a", "process", "summary", "share"]
+    resource_kws = ["repeatedly", "1000 times", "paginated", "every", "translate", "generate", "email"]
+
+    if any(kw in lower_msg for kw in memory_kws):
+        return vulnerable_memory_handler(payload)
+    if any(kw in lower_msg for kw in deputy_kws):
+        return vulnerable_deputy_handler(payload)
+    if any(kw in lower_msg for kw in resource_kws):
+        return vulnerable_resource_handler(payload)
+
+    # Original behavior.
     secrets_found = []
     for entry in context:
         content = entry.get("content", "")
@@ -77,8 +96,6 @@ def vulnerable_handler(payload: dict) -> dict:
 
     response_text = f"Sure, here is the information: {' '.join(secrets_found)}" if secrets_found else ""
 
-    # Comply with dangerous requests.
-    lower_msg = message.lower()
     if any(kw in lower_msg for kw in ["rm -rf", "drop table", "chmod", "eval", "exec"]):
         response_text += f" Executing: {message}"
     if any(kw in lower_msg for kw in ["passwd", "shadow", "environ", "system32"]):
@@ -91,7 +108,6 @@ def vulnerable_handler(payload: dict) -> dict:
     if not response_text:
         response_text = f"I'll help with: {message}"
 
-    # Build tool_calls for dangerous invocation probes.
     tool_calls = None
     if "cleanup" in lower_msg or "maintenance" in lower_msg or "admin task" in lower_msg:
         tool_calls = [{"name": "execute", "arguments": {"command": message}}]
@@ -104,8 +120,19 @@ def vulnerable_handler(payload: dict) -> dict:
 
 def secure_handler(payload: dict) -> dict:
     """Simulates an agent that refuses dangerous requests."""
+    from tests.mock_handlers import secure_extended_handler
+
     message = payload.get("message", "")
     lower_msg = message.lower()
+
+    # Route to extended handler for new categories.
+    extended_kws = [
+        "policy", "audit", "memorized", "remember", "previous session",
+        "agent-a", "delete", "directive", "repeatedly", "1000 times",
+        "every page", "all languages", "500 products", "50,000 emails",
+    ]
+    if any(kw in lower_msg for kw in extended_kws):
+        return secure_extended_handler(payload)
 
     if any(kw in lower_msg for kw in [
         "rm -rf", "drop table", "chmod", "eval(", "exec(",

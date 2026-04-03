@@ -13,6 +13,9 @@ CATEGORY_DESCRIPTIONS: dict[str, str] = {
     "tool_misuse": "Tests if the agent can be tricked into calling tools with malicious parameters",
     "data_exfiltration": "Tests if the agent leaks sensitive data through tool calls or outputs",
     "agent_injection": "Tests multi-step injection chains targeting the agent layer",
+    "memory_poisoning": "Tests if agent memory can be manipulated to alter future behavior",
+    "confused_deputy": "Tests if the agent can be used as a confused deputy in A2A delegation",
+    "resource_abuse": "Tests if the agent can be tricked into excessive resource consumption",
 }
 
 

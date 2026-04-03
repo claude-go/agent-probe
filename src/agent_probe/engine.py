@@ -13,6 +13,9 @@ from agent_probe.targets.base import BaseTarget
 import agent_probe.probes.tool_misuse as _tm  # noqa: F401
 import agent_probe.probes.data_exfiltration as _de  # noqa: F401
 import agent_probe.probes.agent_injection as _ai  # noqa: F401
+import agent_probe.probes.memory_poisoning as _mp  # noqa: F401
+import agent_probe.probes.confused_deputy as _cd  # noqa: F401
+import agent_probe.probes.resource_abuse as _ra  # noqa: F401
 
 
 def run_probes(

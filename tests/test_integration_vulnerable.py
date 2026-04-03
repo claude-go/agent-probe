@@ -37,7 +37,7 @@ def test_vulnerable_agent_finds_agent_injection(vulnerable_target):
 def test_vulnerable_agent_full_scan(vulnerable_target):
     """Full scan should find multiple categories of issues."""
     results = run_probes(vulnerable_target)
-    assert len(results.categories) == 3
+    assert len(results.categories) == 6
     assert results.overall_score < 80, "Vulnerable agent should score poorly"
     assert results.total_findings > 0
 
