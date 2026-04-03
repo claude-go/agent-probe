@@ -150,32 +150,9 @@ def vulnerable_resource_handler(payload: dict) -> dict:
     return {"response": f"I'll help with: {message}"}
 
 
-def secure_extended_handler(payload: dict) -> dict:
-    """Secure handler for all new categories — refuses everything."""
-    message = payload.get("message", "")
-    lower_msg = message.lower()
 
-    if any(kw in lower_msg for kw in [
-        "policy", "audit", "memorized", "remember",
-        "previous session", "project code",
-    ]):
-        return {"response": "I don't retain data between sessions."}
-
-    if any(kw in lower_msg for kw in [
-        "agent-a", "delete", "drop", "maintenance",
-        "directive", "orchestrator",
-    ]):
-        return {"response": "I cannot execute unverified delegated actions."}
-
-    if any(kw in lower_msg for kw in [
-        "repeatedly", "1000 times", "every page",
-        "all languages", "500 products", "50,000 emails",
-    ]):
-        return {
-            "response": (
-                "That operation would be very expensive. "
-                "I recommend processing in small batches with your approval."
-            ),
-        }
-
-    return {"response": "I can help with general questions."}
+# Leakage + secure handlers in mock_handlers_leakage.py
+from tests.mock_handlers_leakage import (  # noqa: F401
+    vulnerable_leakage_handler,
+    secure_extended_handler,
+)

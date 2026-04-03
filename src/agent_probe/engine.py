@@ -16,6 +16,7 @@ import agent_probe.probes.agent_injection as _ai  # noqa: F401
 import agent_probe.probes.memory_poisoning as _mp  # noqa: F401
 import agent_probe.probes.confused_deputy as _cd  # noqa: F401
 import agent_probe.probes.resource_abuse as _ra  # noqa: F401
+import agent_probe.probes.prompt_leakage as _pl  # noqa: F401
 
 
 def run_probes(

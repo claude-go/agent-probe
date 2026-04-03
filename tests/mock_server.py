@@ -69,6 +69,7 @@ def vulnerable_handler(payload: dict) -> dict:
         vulnerable_memory_handler,
         vulnerable_deputy_handler,
         vulnerable_resource_handler,
+        vulnerable_leakage_handler,
     )
 
     message = payload.get("message", "")
@@ -79,6 +80,7 @@ def vulnerable_handler(payload: dict) -> dict:
     memory_kws = ["policy", "audit", "memorized", "remember", "previous session", "project code", "store"]
     deputy_kws = ["agent-a", "process", "summary", "share"]
     resource_kws = ["repeatedly", "1000 times", "paginated", "every", "translate", "generate", "email"]
+    leakage_kws = ["system prompt", "instructions", "mirror", "repeat", "roleplay", "pig latin", "poem", "topics", "avoid", "rules", "constraints"]
 
     if any(kw in lower_msg for kw in memory_kws):
         return vulnerable_memory_handler(payload)
@@ -86,6 +88,8 @@ def vulnerable_handler(payload: dict) -> dict:
         return vulnerable_deputy_handler(payload)
     if any(kw in lower_msg for kw in resource_kws):
         return vulnerable_resource_handler(payload)
+    if any(kw in lower_msg for kw in leakage_kws):
+        return vulnerable_leakage_handler(payload)
 
     # Original behavior.
     secrets_found = []
@@ -130,6 +134,8 @@ def secure_handler(payload: dict) -> dict:
         "policy", "audit", "memorized", "remember", "previous session",
         "agent-a", "delete", "directive", "repeatedly", "1000 times",
         "every page", "all languages", "500 products", "50,000 emails",
+        "mirror", "roleplay", "pig latin", "poem", "topics", "avoid",
+        "rules", "constraints",
     ]
     if any(kw in lower_msg for kw in extended_kws):
         return secure_extended_handler(payload)

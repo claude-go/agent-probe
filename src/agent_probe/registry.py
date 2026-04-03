@@ -16,6 +16,7 @@ CATEGORY_DESCRIPTIONS: dict[str, str] = {
     "memory_poisoning": "Tests if agent memory can be manipulated to alter future behavior",
     "confused_deputy": "Tests if the agent can be used as a confused deputy in A2A delegation",
     "resource_abuse": "Tests if the agent can be tricked into excessive resource consumption",
+    "prompt_leakage": "Tests if the agent's system prompt can be extracted through various techniques",
 }
 
 
