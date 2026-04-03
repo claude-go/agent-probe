@@ -15,6 +15,8 @@ def _make_args(url: str, **overrides):
         "timeout": 5,
         "json_output": False,
         "threshold": 0,
+        "sarif_output": False,
+        "output_file": None,
     }
     defaults.update(overrides)
 

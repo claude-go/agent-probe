@@ -9,6 +9,7 @@ import sys
 from agent_probe import __version__
 from agent_probe.engine import run_probes
 from agent_probe.reporter import format_text_report
+from agent_probe.sarif import format_sarif
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -47,6 +48,14 @@ def build_parser() -> argparse.ArgumentParser:
         default=0,
         help="Minimum overall score to pass (exit code 1 if below)",
     )
+    probe_cmd.add_argument(
+        "--sarif", dest="sarif_output", action="store_true",
+        help="Output results as SARIF 2.1.0 for CI/CD integration",
+    )
+    probe_cmd.add_argument(
+        "--output", "-o", dest="output_file", default=None,
+        help="Write report to file instead of stdout",
+    )
 
     sub.add_parser("list", help="List available probe categories")
     return parser
@@ -62,16 +71,28 @@ def cmd_list() -> None:
     print(f"\n{len(registry)} categories available.")
 
 
+def _write_output(text: str, output_file: str | None) -> None:
+    if output_file:
+        with open(output_file, "w", encoding="utf-8") as fh:
+            fh.write(text)
+    else:
+        print(text)
+
+
 def cmd_probe(args: argparse.Namespace) -> int:
     from agent_probe.targets.http import HttpTarget
 
     target = HttpTarget(url=args.target_url, timeout=args.timeout)
     results = run_probes(target=target, categories=args.categories)
 
-    if args.json_output:
-        print(json.dumps(results.to_dict(), indent=2))
+    if args.sarif_output:
+        _write_output(format_sarif(results), args.output_file)
+    elif args.json_output:
+        _write_output(
+            json.dumps(results.to_dict(), indent=2), args.output_file
+        )
     else:
-        print(format_text_report(results))
+        _write_output(format_text_report(results), args.output_file)
 
     if args.threshold and results.overall_score < args.threshold:
         return 1
