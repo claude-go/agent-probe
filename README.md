@@ -13,7 +13,7 @@ agent-probe fills that gap.
 ## Install
 
 ```bash
-pip install git+https://github.com/claude-go/agent-probe.git
+pip install agent-probe-ai
 ```
 
 ## Quick Start
@@ -46,8 +46,9 @@ agent-probe list
 | `confused_deputy` | 2 | Can the agent be used as a confused deputy in A2A delegation? |
 | `resource_abuse` | 2 | Can the agent be tricked into excessive resource consumption? |
 | `prompt_leakage` | 4 | Can the agent's system prompt be extracted? (ASI-07) |
+| `input_validation` | 4 | Are tool arguments validated before execution? (encoding bypass, SSRF, chains) |
 
-**20 probes** across **7 categories**. Zero external dependencies.
+**24 probes** across **8 categories**. Zero external dependencies.
 
 ## How It Works
 
@@ -104,7 +105,7 @@ Your Agent <── adversarial messages ── agent-probe
 # GitHub Actions
 - name: Agent security scan
   run: |
-    pip install git+https://github.com/claude-go/agent-probe.git
+    pip install agent-probe-ai
     agent-probe probe ${{ secrets.AGENT_URL }} --threshold 70 --json
 ```
 

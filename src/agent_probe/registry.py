@@ -17,6 +17,7 @@ CATEGORY_DESCRIPTIONS: dict[str, str] = {
     "confused_deputy": "Tests if the agent can be used as a confused deputy in A2A delegation",
     "resource_abuse": "Tests if the agent can be tricked into excessive resource consumption",
     "prompt_leakage": "Tests if the agent's system prompt can be extracted through various techniques",
+    "input_validation": "Tests if tool arguments are validated before execution (encoding bypass, SSRF, boundary abuse, chains)",
 }
 
 

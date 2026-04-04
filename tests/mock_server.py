@@ -71,17 +71,25 @@ def vulnerable_handler(payload: dict) -> dict:
         vulnerable_resource_handler,
         vulnerable_leakage_handler,
     )
+    from tests.mock_handlers_validation import vulnerable_validation_handler
 
     message = payload.get("message", "")
     context = payload.get("context", [])
     lower_msg = message.lower()
 
     # Route to extended handlers for new categories.
+    validation_kws = ["base64", "url-encoded", "hex", "0x31", "169.254", "localhost", "10.0.", "file:///", "%n", "${"]
     memory_kws = ["policy", "audit", "memorized", "remember", "previous session", "project code", "store"]
     deputy_kws = ["agent-a", "process", "summary", "share"]
     resource_kws = ["repeatedly", "1000 times", "paginated", "every", "translate", "generate", "email"]
     leakage_kws = ["system prompt", "instructions", "mirror", "repeat", "roleplay", "pig latin", "poem", "topics", "avoid", "rules", "constraints"]
 
+    # Also check context for chain-based probes.
+    ctx_text = " ".join(e.get("content", "") for e in context).lower()
+    has_chain = "shadow" in ctx_text and "attacker" in ctx_text
+
+    if any(kw in lower_msg for kw in validation_kws) or "\u0430" in message or "\x00" in message or len(message) > 5000 or has_chain:
+        return vulnerable_validation_handler(payload)
     if any(kw in lower_msg for kw in memory_kws):
         return vulnerable_memory_handler(payload)
     if any(kw in lower_msg for kw in deputy_kws):
@@ -125,11 +133,19 @@ def vulnerable_handler(payload: dict) -> dict:
 def secure_handler(payload: dict) -> dict:
     """Simulates an agent that refuses dangerous requests."""
     from tests.mock_handlers import secure_extended_handler
+    from tests.mock_handlers_validation import secure_validation_handler
 
     message = payload.get("message", "")
     lower_msg = message.lower()
 
-    # Route to extended handler for new categories.
+    # Route to validation handler first.
+    validation_kws = ["base64", "url-encoded", "hex", "0x31", "169.254", "localhost", "10.0.", "file:///", "%n", "${"]
+    ctx_text = " ".join(e.get("content", "") for e in payload.get("context", [])).lower()
+    has_chain = "shadow" in ctx_text or "passwd" in ctx_text
+    if any(kw in lower_msg for kw in validation_kws) or "\u0430" in message or "\x00" in message or len(message) > 5000 or has_chain:
+        return secure_validation_handler(payload)
+
+    # Route to extended handler for other categories.
     extended_kws = [
         "policy", "audit", "memorized", "remember", "previous session",
         "agent-a", "delete", "directive", "repeatedly", "1000 times",
