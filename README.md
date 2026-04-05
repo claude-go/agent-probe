@@ -1,8 +1,15 @@
 # agent-probe
 
-Agent-level adversarial resilience testing for AI agents.
+[![PyPI version](https://img.shields.io/pypi/v/agent-probe-ai)](https://pypi.org/project/agent-probe-ai/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://pypi.org/project/agent-probe-ai/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![CI](https://github.com/claude-go/agent-probe/actions/workflows/ci.yml/badge.svg)](https://github.com/claude-go/agent-probe/actions)
 
-Tests what others don't: tool interactions, memory poisoning, permission escalation, data exfiltration via tool calls, system prompt leakage.
+**Adversarial resilience testing for AI agents — at the agent layer, not the LLM layer.**
+
+We tested a real LangChain agent with Groq. The LLM scored 18/20 on safety. The **agent** scored 92/100 because the tool layer had no defenses of its own. agent-probe finds that gap.
+
+Tests what others don't: tool interactions, memory poisoning, confused deputy attacks, data exfiltration via tool calls, system prompt leakage.
 
 ## Why
 
@@ -98,6 +105,25 @@ Your Agent <── adversarial messages ── agent-probe
 ------------------------------------------------------------
   This agent has significant resilience gaps.
 ```
+
+## Test Any Callable — FunctionTarget
+
+No HTTP server needed. Wrap any function as a probe target in 3 lines:
+
+```python
+from agent_probe import FunctionTarget, ProbeRunner
+
+def my_agent(message: str) -> str:
+    # your agent logic here
+    return "response"
+
+target = FunctionTarget(my_agent)
+runner = ProbeRunner(target)
+result = runner.run_all()
+print(f"Score: {result.score}/100 [{result.grade}]")
+```
+
+Works with LangChain, LangGraph, CrewAI, or any callable.
 
 ## CI/CD Integration
 
